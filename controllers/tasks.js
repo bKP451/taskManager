@@ -7,8 +7,11 @@ const getAllTasks = async (request, response) => {
     // })
     try {
         // const tasks = await taskModel.find({completed:'true'})
-        const tasks = await taskModel.find()
-        response.status(200).json({allTasks:tasks});
+        const tasks = await taskModel.find({})
+        response
+        .status(200)
+        .json({status:"success", data:{tasks, nbHits:tasks.length}});
+        // console.log(typeof(tasks), tasks.length);
     }catch(err) {
         response.status(501).json({msg:err});
       }
@@ -47,7 +50,7 @@ const getSingleTask = async (request, response) => {
         if(!task) {
             return response.status(404).json({msg:`Server could not find task with ${taskId.id}`})
         }
-        return response.status(200).json(task);
+        return response.status(200).json({task});
     } catch(err){
         console.log(typeof(request.params));
         response.status(500).json(err);
@@ -67,7 +70,7 @@ const updateTask = async (request, response) => {
                 runValidators:true
             }
             )
-        response.status(200).json({data:task});
+        response.status(200).json({task});
 
         if(!task) {
             return response.status(404).json({msg:`Server could not find task with ${taskId.id}`})
