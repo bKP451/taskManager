@@ -1,21 +1,15 @@
 const taskModel = require('../Models/Task')
+const  asyncWrapper = require('../middleware/async')
 
-const getAllTasks = async (request, response) => {
-    // taskModel.find({completed:'false'},function(err, task){
-    //     if(err) return response.status(500).json(err);
-    //     response.json(task);
-    // })
-    try {
-        // const tasks = await taskModel.find({completed:'true'})
+const getAllTasks = asyncWrapper(async (request, response) => {
+    
         const tasks = await taskModel.find({})
         response
         .status(200)
         .json({status:"success", data:{tasks, nbHits:tasks.length}});
         // console.log(typeof(tasks), tasks.length);
-    }catch(err) {
-        response.status(501).json({msg:err});
-      }
-}
+    }
+)
 
 const postTask = (request, response) => {
     // importing name and completed from the postman
@@ -38,10 +32,9 @@ const postTask = (request, response) => {
     
 }
 
-const getSingleTask = async (request, response) => {
+const getSingleTask = asyncWrapper( async (request, response) => {
     // response.send(request.params)
     // response.json({id:"I am the  getSingleTask Route"})
-    try {
         // const taskInfo = await taskModel.findOne({_id:request.params});
         // const {id:taskId} = request.params;
         const taskId = request.params;
@@ -51,15 +44,12 @@ const getSingleTask = async (request, response) => {
             return response.status(404).json({msg:`Server could not find task with ${taskId.id}`})
         }
         return response.status(200).json({task});
-    } catch(err){
-        console.log(typeof(request.params));
-        response.status(500).json(err);
-    }
+    
 }
+)
 
-const updateTask = async (request, response) => {
+const updateTask = asyncWrapper(async (request, response) => {
     // response.send("Update a task")
-    try {
         // filter
         const filter  = {_id:request.params.id}
         // console.log(taskObject.id);
@@ -75,14 +65,12 @@ const updateTask = async (request, response) => {
         if(!task) {
             return response.status(404).json({msg:`Server could not find task with ${taskId.id}`})
         }
-
-    }catch(error){
-        response.status(500).json(error);
-    }
 }
+)
 
-const deleteTask = async (request, response) => {
-    try {
+
+const deleteTask = asyncWrapper(async (request, response) => {
+
         // extracting the id from the url
         const taskIdObject = request.params;
         // it returns the object
@@ -91,9 +79,9 @@ const deleteTask = async (request, response) => {
             return response.status(404).json({msg:`Could not delete task with id ${taskIdObject.id}`});
         }
         response.status(200).json({msg:`Successfully deleted ${task}`});
-    }catch(error) {
-        response.status(500).json(error);
-    }
 }
+)
+
+
 module.exports = {getAllTasks, postTask,  getSingleTask, updateTask, deleteTask}
 
